@@ -6,24 +6,24 @@ import matplotlib.pyplot as plt
 def system_eq(y, x, beta): #y is a list of outputs, x is independant variable, beta is eigenvalue
     return [y[1], -(x**2 - beta) * y[0]] #outputs a vector with (y1=dy/dx, dy1/dx= d2y/dx2)
 
-def slope(beta):
-  return -np.sqrt(4**2- beta)*y0[0]
+#def slope(beta):
+  #return -np.sqrt(4**2- beta)*y0[0]
 
 #initial conditions
 tol = 1e-6  # define a tolerance level
 col = ['r', 'b', 'g', 'c', 'm', 'k']  # eigenfunc colors
 xspan = [-4, 4]
 xlist = np.linspace(xspan[0], xspan[1],1000)
-beta_start= 15 #need to figure out how to pick this well
+beta_start= .1  #need to figure out how to pick this well
 
 for modes in range (1,6):
     beta = beta_start  # initial value of eigenvalue beta
-    dbeta = beta_start / 100  # default step size in beta
-    y0=[1, 1]
+    dbeta = .2  # default step size in beta
+    y0=[1, np.sqrt(16-beta)]
     for k in range(1000): #try 1000 times to get convergence
-        y = odeint(system_eq, y0, xlist, args=(beta,))
+        ysol = odeint(system_eq, y0, xlist, args=(beta,))
 
-        if abs(y[-1, 0] - slope(beta)*y[-1,0])< tol:
+        if abs(ysol[-1, 1] + np.sqrt(16-beta)*y[-1,0])< tol:
            print(beta)
            break
         if (-1) ** (modes+1) * y[-1, 0] > 0:
