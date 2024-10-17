@@ -1,0 +1,36 @@
+import numpy as np
+from scipy.integrate import odeint
+from scipy.integrate import RK45
+import matplotlib.pyplot as plt
+
+def system_eq(y, x, beta): #y is a list of outputs, x is independant variable, beta is eigenvalue
+    return [y[1], -(x**2 - beta) * y[0]] #outputs a vector with (y1=dy/dx, dy1/dx= d2y/dx2)
+
+def slope(beta):
+  return -np.sqrt(4**2- beta)*y0[0]
+
+#initial conditions
+tol = 1e-6  # define a tolerance level
+col = ['r', 'b', 'g', 'c', 'm', 'k']  # eigenfunc colors
+xspan = [-4, 4]
+xlist = np.linspace(xspan[0], xspan[1],1000)
+beta_start= 15 #need to figure out how to pick this well
+
+for modes in range (1,6):
+    beta = beta_start  # initial value of eigenvalue beta
+    dbeta = beta_start / 100  # default step size in beta
+    y0=[1, 1]
+    for k in range(1000): #try 1000 times to get convergence
+        y = odeint(system_eq, y0, xlist, args=(beta,))
+
+        if abs(y[-1, 0] - slope(beta)*y[-1,0])< tol:
+           print(beta)
+           break
+        if (-1) ** (modes+1) * y[-1, 0] > 0:
+            beta -= dbeta
+        else:
+            beta += dbeta / 2
+            dbeta /= 2
+    beta_start = beta - 0.1  # after finding eigenvalue, pick new start
+    norm = np.trapz(y[:, 0] * y[:, 0], xlist)  # calculate the normalization
+    plt.plot(xlist, y[:, 0] / np.sqrt(norm), col[modes - 1])  # plot modes
